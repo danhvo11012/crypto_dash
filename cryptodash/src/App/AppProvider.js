@@ -19,19 +19,20 @@ export class AppProvider extends React.Component {
         super(props);
         this.state = {
             page: 'dashboard',
-            // favorites: JSON.parse(localStorage.getItem('cryptoDash'))["favorites"],
-            favorites: [],
+            favorites: ['BTC'],
             ...this.savedSetting(),
             setPage: this.setPage,
             addCoin: this.addCoin,
             removeCoin: this.removeCoin,
             isInFavorites: this.isInFavorites,
             confirmFavorites: this.confirmFavorites,
+            setFilteredCoins: this.setFilteredCoins,
         }
     }
 
     componentDidMount = () => {
         this.fetchCoins();
+        this.fetchPrices()
     }
 
     fetchCoins = async () => {
@@ -39,11 +40,35 @@ export class AppProvider extends React.Component {
         this.setState({coinList});
     }
 
+    fetchPrices = async () => {
+        // Skip fetching prices if on the first visit. Instead, let users confirm their
+        // favorite coins first
+        if (this.state.firstVisit) return;
+
+        // Only fetch prices if not the first visit
+        let prices = await this.ccPrices();
+        console.log(prices)
+        this.setState({prices});
+    }
+
+    ccPrices = async () => {
+        let returnData = [];
+        for (let i = 0; i < this.state.favorites.length; i++) {
+            try {
+                let priceData = await cc.priceFull(this.state.favorites[i], 'USD');
+                returnData.push(priceData);
+            } catch (e) {
+                console.warn("Fetch price error: ", e);
+            }
+        }
+        return returnData;
+    }
+
     savedSetting() {
         let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
         if (!cryptoDashData) return {page: 'settings', firstVisit: true}
         let {favorites} = cryptoDashData;
-        return {favorites};
+        return {favorites, firstVisit: false};
     }
 
     // Check if a key exists in favorites
@@ -72,11 +97,17 @@ export class AppProvider extends React.Component {
         this.setState({
             firstVisit: false,
             page: 'dashboard'
+        }, () => {
+            this.fetchPrices()
         });
         
         localStorage.setItem('cryptoDash', JSON.stringify({
             favorites: [...this.state.favorites]
-        }))
+        }));
+    }
+
+    setFilteredCoins = (filteredCoins) => {
+        this.setState({filteredCoins});
     }
 
     render() {
