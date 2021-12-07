@@ -47,7 +47,6 @@ export class AppProvider extends React.Component {
 
         // Only fetch prices if not the first visit
         let prices = await this.ccPrices();
-        console.log(prices)
         this.setState({prices});
     }
 
@@ -68,7 +67,7 @@ export class AppProvider extends React.Component {
         let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
         if (!cryptoDashData) return {page: 'settings', firstVisit: true}
         let {favorites} = cryptoDashData;
-        return {favorites, firstVisit: false};
+        return {favorites};
     }
 
     // Check if a key exists in favorites
