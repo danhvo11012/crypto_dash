@@ -26,6 +26,7 @@ export class AppProvider extends React.Component {
             removeCoin: this.removeCoin,
             isInFavorites: this.isInFavorites,
             confirmFavorites: this.confirmFavorites,
+            setCurrentFavorite: this.setCurrentFavorite,
             setFilteredCoins: this.setFilteredCoins,
         }
     }
@@ -66,8 +67,8 @@ export class AppProvider extends React.Component {
     savedSetting() {
         let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
         if (!cryptoDashData) return {page: 'settings', firstVisit: true}
-        let {favorites} = cryptoDashData;
-        return {favorites};
+        let {favorites, currentFavorite} = cryptoDashData;
+        return {favorites, currentFavorite};
     }
 
     // Check if a key exists in favorites
@@ -93,16 +94,34 @@ export class AppProvider extends React.Component {
     setPage = page => this.setState({page});
 
     confirmFavorites = () => {
+        let currentFavorite = this.state.currentFavorite? 
+            ((_.includes(this.state.favorites, this.state.currentFavorite)) ? 
+                this.state.currentFavorite : this.state.favorites[0]) : this.state.favorites[0];
         this.setState({
             firstVisit: false,
-            page: 'dashboard'
+            page: 'dashboard',
+            currentFavorite,
         }, () => {
             this.fetchPrices()
         });
         
         localStorage.setItem('cryptoDash', JSON.stringify({
-            favorites: [...this.state.favorites]
+            favorites: [...this.state.favorites],
+            currentFavorite
         }));
+    }
+
+    setCurrentFavorite = (newCurrentFavorite) => {
+        // Set current favorite for the app's state
+        this.setState({
+            currentFavorite: newCurrentFavorite
+        });
+
+        // Set current favorite for the browser's local storage
+        localStorage.setItem('cryptoDash', JSON.stringify({
+            ...JSON.parse(localStorage.getItem('cryptoDash')),
+            currentFavorite: newCurrentFavorite
+        }))
     }
 
     setFilteredCoins = (filteredCoins) => {
