@@ -102,7 +102,7 @@ export class AppProvider extends React.Component {
             page: 'dashboard',
             currentFavorite,
         }, () => {
-            this.fetchPrices()
+            this.fetchPrices();
         });
         
         localStorage.setItem('cryptoDash', JSON.stringify({

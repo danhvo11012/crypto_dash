@@ -18,7 +18,7 @@ function getBodySectionCoins(coinList, filteredCoins) {
 }
 
 function getCoinsToDisplay(coinList, topSection, favorites, filteredCoins) {
-    return topSection ? favorites : getBodySectionCoins(coinList, filteredCoins).slice(0,50);
+    return topSection ? favorites : getBodySectionCoins(coinList, filteredCoins).slice(0,200);
 }
 
 export default function ({ topSection }) {
