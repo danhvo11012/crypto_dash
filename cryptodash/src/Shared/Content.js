@@ -12,8 +12,6 @@ export default function(props) {
                 return <div> Loading Prices </div>
             }
             
-            console.log(firstVisit, prices);
-
             return <div> {props.children} </div>
         }}
     </AppContext.Consumer>

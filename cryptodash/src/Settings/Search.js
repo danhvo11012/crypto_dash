@@ -22,7 +22,7 @@ const SearchInput = styled.input`
 
 const handleFilter = _.debounce((inputValue, coinList, setFilteredCoins) => {
     let allCoinSymbols = Object.keys(coinList);
-    let allCoinNames = allCoinSymbols.map(symbol => coinList[symbol].CoinName);
+    let allCoinNames = allCoinSymbols.map((symbol, index) => coinList[symbol].CoinName);
     let allCoinResults = allCoinSymbols.concat(allCoinNames);
 
     let filteredSearchResults = fuzz
