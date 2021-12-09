@@ -23,6 +23,8 @@ export class AppProvider extends React.Component {
             page: 'dashboard',
             favorites: ['BTC'],
             ...this.savedSetting(),
+            timeInterval: 'days',
+            changeTISelect: this.changeTISelect,
             setPage: this.setPage,
             addCoin: this.addCoin,
             removeCoin: this.removeCoin,
@@ -32,6 +34,7 @@ export class AppProvider extends React.Component {
             setFilteredCoins: this.setFilteredCoins,
         }
     }
+
 
     componentDidMount = () => {
         this.fetchCoins();
@@ -71,22 +74,21 @@ export class AppProvider extends React.Component {
         if (this.state.firstVisit) return;
 
         let historicalResults = await this.ccHistorical();
-        let historicalData10Weeks = [
+        let historicalData = [
             {
                 name: this.state.currentFavorite,
                 data: historicalResults.map((ticker, index) => [
-                    moment().subtract({weeks: TIME_UNIT - index}).valueOf(),
+                    moment().subtract({[this.state.timeInterval]: TIME_UNIT - index}).valueOf(),
                     ticker.USD
                 ])
             }
         ]
 
-        this.setState({historicalData10Weeks})
+        this.setState({historicalData})
     }
 
     ccHistorical = () => {
         try{
-            console.log("ccHistorical: ", this.state.currentFavorite);
             let promises = [];
             for (let unit = TIME_UNIT; unit >= 0; unit--) {
                 promises.push(
@@ -94,7 +96,7 @@ export class AppProvider extends React.Component {
                         this.state.currentFavorite,
                         ['USD'],
                         moment()
-                            .subtract({ weeks: unit })
+                            .subtract({ [this.state.timeInterval]: unit })
                             .toDate()
                     )
                 )
@@ -160,7 +162,7 @@ export class AppProvider extends React.Component {
         // Set current favorite for the app's state
         this.setState({
             currentFavorite: newCurrentFavorite,
-            historicalData10Weeks: null,
+            historicalData: null,
         }, this.fetchHistorical)
 
         // Set current favorite for the browser's local storage
@@ -175,6 +177,12 @@ export class AppProvider extends React.Component {
     setFilteredCoins = (filteredCoins) => {
         this.setState({filteredCoins});
     }
+
+    changeTISelect = ti => {
+        console.log(ti);
+        this.setState({timeInterval: ti, historicalData: null}, this.fetchHistorical);
+    }
+
 
     render() {
         return(
