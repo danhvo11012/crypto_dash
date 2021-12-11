@@ -35,11 +35,11 @@ export class AppProvider extends React.Component {
         }
     }
 
-
     componentDidMount = () => {
         this.fetchCoins();
         this.fetchPrices();
         this.fetchHistorical();
+        this.fetchCandlestick();
     }
 
     fetchCoins = async () => {
@@ -107,6 +107,11 @@ export class AppProvider extends React.Component {
             console.error(e);
         }
         return;
+    }
+
+    fetchCandlestick = async () => {
+        const candlestickData = await (await fetch('https://demo-live-data.highcharts.com/aapl-ohlc.json')).json();
+        this.setState({candlestickData});
     }
 
     savedSetting() {

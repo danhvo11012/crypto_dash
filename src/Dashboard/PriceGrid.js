@@ -15,7 +15,7 @@ export default function ({props}) {
         <AppContext.Consumer>
             {({prices, currentFavorite}) => (
                 <PriceGrid>
-                    {prices.map((price, k) => <PriceTile price={price} index={k} currentFavorite={currentFavorite} />)}
+                    {prices.map((price, k) => <PriceTile price={price} index={k} key={k} currentFavorite={currentFavorite} />)}
                 </PriceGrid>
             )}
         </AppContext.Consumer>
